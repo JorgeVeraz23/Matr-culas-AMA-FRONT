@@ -12,7 +12,10 @@ import {
   useMediaQuery
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/SpaceDashboard";
+import ClassIcon from "@mui/icons-material/Class";
+import PersonIcon from "@mui/icons-material/Person";
 import SchoolIcon from "@mui/icons-material/School";
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import DescriptionIcon from "@mui/icons-material/Description";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -28,6 +31,9 @@ export const Sidebar: React.FC = () => {
 
   const menuItems = [
     { label: "Dashboard", icon: <DashboardIcon />, to: "/dashboard" },
+    { label: "Paralelos", icon: <BookmarkIcon />, to: "/paralelo" },
+    { label: "Cursos", icon: <ClassIcon />, to: "/curso" },
+    { label: "Representante", icon: <PersonIcon />, to: "/representante" },
     { label: "Estudiantes", icon: <SchoolIcon />, to: "/students" },
     { label: "Matrículas", icon: <AssignmentIcon />, to: "/enrollments" },
     { label: "Documentos digitales", icon: <DescriptionIcon />, to: "/documents" },
