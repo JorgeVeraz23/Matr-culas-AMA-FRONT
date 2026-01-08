@@ -1,18 +1,52 @@
 import React from "react";
-import { Stack, Typography, Button } from "@mui/material";
+import { Box, Button, Typography, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-export const NotFoundPage: React.FC = () => {
+const NotFoundPage: React.FC = () => {
   const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    navigate("/dashboard");  // Redirige al Dashboard
+  };
+
   return (
-    <Stack spacing={2}>
-      <Typography variant="h2">Página no encontrada</Typography>
-      <Typography variant="body2" color="text.secondary">
-        La ruta solicitada no existe en la plataforma.
-      </Typography>
-      <Button variant="contained" onClick={() => navigate("/dashboard")}>
-        Volver al dashboard
+    <Container
+      maxWidth="lg"
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        backgroundColor: "#f4f6f8",
+        flexDirection: "column",
+        textAlign: "center",
+      }}
+    >
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h3" sx={{ fontWeight: 700, color: "primary.main" }}>
+          Página no encontrada
+        </Typography>
+        <Typography variant="body1" sx={{ color: "text.secondary", mt: 2 }}>
+          La ruta solicitada no existe en la plataforma.
+        </Typography>
+      </Box>
+
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{
+          padding: "10px 20px",
+          fontWeight: "600",
+          fontSize: "16px",
+          borderRadius: "8px",
+          boxShadow: 3,
+        }}
+        onClick={handleGoBack}
+      >
+        Volver al Dashboard
       </Button>
-    </Stack>
+    </Container>
   );
 };
+
+export default NotFoundPage;

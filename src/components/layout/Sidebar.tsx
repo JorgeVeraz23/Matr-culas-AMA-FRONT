@@ -32,9 +32,10 @@ export const Sidebar: React.FC = () => {
   const menuItems = [
     { label: "Dashboard", icon: <DashboardIcon />, to: "/dashboard" },
     { label: "Paralelos", icon: <BookmarkIcon />, to: "/paralelo" },
-    { label: "Cursos", icon: <ClassIcon />, to: "/curso" },
-    { label: "Representante", icon: <PersonIcon />, to: "/representante" },
+    { label: "Año Lectivo", icon: <BookmarkIcon />, to: "/añoLectivo" },
+    { label: "Materias", icon: <BookmarkIcon />, to: "/materia" },
     { label: "Estudiantes", icon: <SchoolIcon />, to: "/students" },
+    { label: "Ofertas", icon: <BookmarkIcon />, to: "/ofertas" },
     { label: "Matrículas", icon: <AssignmentIcon />, to: "/enrollments" },
     { label: "Documentos digitales", icon: <DescriptionIcon />, to: "/documents" },
     { label: "Configuración", icon: <SettingsIcon />, to: "/settings" }
@@ -44,7 +45,7 @@ export const Sidebar: React.FC = () => {
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <Toolbar sx={{ px: 2, minHeight: 72 }}>
         <Box>
-          <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2, fontSize: '20px', color: theme.palette.primary.main }}>
             Matrículas AMA
           </Typography>
           <Typography variant="caption" color="text.secondary">
@@ -66,20 +67,27 @@ export const Sidebar: React.FC = () => {
                 sx={{
                   borderRadius: 2,
                   mx: 1,
-                  mb: 0.5
+                  mb: 0.5,
+                  backgroundColor: selected ? theme.palette.primary.light : "transparent",
+                  '&:hover': {
+                    backgroundColor: theme.palette.primary.light,
+                  }
                 }}
               >
-                <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 40, color: selected ? "white" : theme.palette.text.primary }}>
+                  {item.icon}
+                </ListItemIcon>
                 <ListItemText
                   primary={item.label}
-                  primaryTypographyProps={{ fontSize: 14 }}
+                  primaryTypographyProps={{ fontSize: 16, fontWeight: selected ? 700 : 500, letterSpacing: 0.5 }}
+                  sx={{ color: selected ? "white" : theme.palette.text.primary }}
                 />
               </ListItemButton>
             );
           })}
         </List>
       </Box>
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ p: 2, backgroundColor: theme.palette.grey[200] }}>
         <Typography variant="caption" color="text.secondary">
           Versión prototipo • {new Date().getFullYear()}
         </Typography>
@@ -88,7 +96,6 @@ export const Sidebar: React.FC = () => {
   );
 
   if (isMobile) {
-    // Para avance rápido, el drawer queda fijo también en mobile
     return (
       <Drawer
         variant="permanent"
@@ -98,8 +105,9 @@ export const Sidebar: React.FC = () => {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
-            bgcolor: "grey.900",
-            color: "grey.50"
+            bgcolor: theme.palette.background.default,
+            color: theme.palette.text.primary,
+            borderRight: `2px solid ${theme.palette.divider}`
           }
         }}
       >
@@ -117,8 +125,9 @@ export const Sidebar: React.FC = () => {
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
-          bgcolor: "grey.900",
-          color: "grey.50"
+          bgcolor: theme.palette.background.default,
+          color: theme.palette.text.primary,
+          borderRight: `2px solid ${theme.palette.divider}`
         }
       }}
     >

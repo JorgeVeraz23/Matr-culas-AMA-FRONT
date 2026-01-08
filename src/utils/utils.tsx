@@ -1,13 +1,14 @@
-export const API_BASE_URL = "https://localhost:7016/api/";
+export const API_BASE_URL = "https://localhost:44349/api/";
 
 
 export const API_ROUTES = {
     estudiante: {
-        crear: `${API_BASE_URL}Estudiantes/CrearEstudiante`,
-        editar: `${API_BASE_URL}Estudiantes/ActualizarEstudiante`,
-        eliminar: `${API_BASE_URL}Estudiantes/EliminarEstudiante`,
-        listar: `${API_BASE_URL}Estudiantes/GetAllEstudiantes`,
-        obtenerPorId: `${API_BASE_URL}Estudiantes/ObtenerEstudiante`
+        crear: `${API_BASE_URL}Estudiante/CrearEstudiante`,
+        editar: `${API_BASE_URL}Estudiante/ActualizarEstudiante`,
+        eliminar: `${API_BASE_URL}Estudiante/EliminarEstudiante`,
+        listar: `${API_BASE_URL}Estudiante/GetAllEstudiantes`,
+        obtenerPorId: `${API_BASE_URL}Estudiante/ObtenerEstudiante`,
+        search: `${API_BASE_URL}Estudiante/Search`
     },
     materia: {
         crear: `${API_BASE_URL}Materia/CrearMateria`,
@@ -25,6 +26,7 @@ export const API_ROUTES = {
         editar: `${API_BASE_URL}Paralelo/ActualizarParalelo`,
         eliminar: `${API_BASE_URL}Paralelo/EliminarParalelo`,
         listar: `${API_BASE_URL}Paralelo/GetAllParalelos`,
+        selector: `${API_BASE_URL}Paralelo/SelectorParalelos`,
         obtenerPorId: `${API_BASE_URL}Paralelo/ObtenerParaleloPorId`
     },
     matricula: {
@@ -34,5 +36,16 @@ export const API_ROUTES = {
         obtenerMateriaPorIdEstudiante: `${API_BASE_URL}ObtenerMatriculaPorEstudiante`,
         actualizar: `${API_BASE_URL}Matricula/ActualizarMatricula`
 
+    },
+    auth: {
+        login: `${API_BASE_URL}Auth/login`,
+        register: `${API_BASE_URL}Auth/register`
+    },
+    gradoParalelo: {
+        disponibles: `${API_BASE_URL}GradoParalelo/Disponibles`,
+        crear: `${API_BASE_URL}GradoParalelo/Crear`
+    }, 
+    anioLectivo: {
+        selector: `${API_BASE_URL}AnioLectivo/SelectorAnioLectivo`
     }
 } as const;

@@ -1,63 +1,77 @@
-export interface Student {
-  id: number;
-  nombres: string;
-  apellidos: string;
+export interface EstudianteInput {
+  nombre: string;
   cedula: string;
-  curso: string;
-  paralelo: string;
-  estado: "Activo" | "Inactivo";
+  representante: string;
+  telefono: string;
+  correo: string;
+  nivel: number;
 }
 
-export interface Enrollment {
+
+export interface SelectorOption {
+  key: number;
+  value: string;
+}
+export interface Estudiante {
   id: number;
-  estudiante: string;
-  periodo: string;
-  fecha: string;
-  estado: "Pendiente" | "Aprobada" | "Rechazada";
+  nombre: string;
+  cedula: string;
+  representante: string;
+  telefono: string;
+  correo: string;
+  nivel: number;
 }
 
 export interface Materia {
-  idMateria: number;
-  name: string;
+  id?: number | 0;
+  nombre: string;
+  gradoId: number;
+}
+
+export interface MostrarMateria {
+  id: number;
+  nombre: string;
+  gradoId: number;
+  gradoNombre: string;
 }
 
 export interface Paralelo {
-  idParalelo: number;
   nombre: string;
 }
 
-export interface Profesor {
-  idProfesor: number;
-  nombre: string;
-  edad: number;
-  identificacion: string;
-  celular: string;
-  fechaNacimiento: string;
+export interface MostrarParalelo  extends Paralelo {
+  id: number;
 }
 
-export interface Curso {
-  idCurso: number;
-  nombre: string;
+export type LoginResponse = {
+  token: string;
+  expiresAt: string; // ISO string
+  role: string;
+  userId: string;
+  username: string;
+};
+
+export type AuthUser = {
+  userId: string;
+  username: string;
+  role: string;
+};
+
+
+export interface CrearOferta {
+  gradoId: number;
+  paraleloId: number;
+  anioLectivoId: number;
   cupos: number;
 }
 
-export interface Representante {
-  idRepresentante: number;
-  nombre: string;
-  edad: number;
-  identificacion: string;
-  celular: string;
-  fechaNacimiento: string;
-}
-
-
-
-
-export interface DocumentFile {
-  id: number;
-  estudiante: string;
-  tipo: string;
-  nombreArchivo: string;
-  fechaSubida: string;
-  estado: "Validado" | "En revisión" | "Rechazado";
+export interface OfertasDisponibles {
+  gradoParaleloId: number;
+  paraleloId: number;
+  paraleloNombre: string;
+  gradoNombre: string;
+  anioLectivo: string;
+  cupos: number;
+  ocupados: number;
+  disponibles: number;
 }
