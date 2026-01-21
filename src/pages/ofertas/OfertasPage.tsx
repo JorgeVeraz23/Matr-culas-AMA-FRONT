@@ -77,7 +77,7 @@ export default function OfertasPage() {
     <Box>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
         <Typography variant="h5" sx={{ fontWeight: 800 }}>
-          Ofertas disponibles
+          Cupos disponibles
         </Typography>
 
         <Button
@@ -85,7 +85,7 @@ export default function OfertasPage() {
           startIcon={<AddIcon />}
           onClick={() => navigate("/ofertas/create")}
         >
-          Crear oferta
+          Crear cupo
         </Button>
       </Box>
 

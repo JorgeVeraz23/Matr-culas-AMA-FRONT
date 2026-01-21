@@ -1,6 +1,6 @@
 import { api } from "./apitClient";
 import { API_ROUTES } from "../utils/utils";
-import { Estudiante, EstudianteInput } from "../types";
+import { Estudiante, EstudianteInput, SelectorOption } from "../types";
 
 export const crearEstudiante = async (
   datos: EstudianteInput
@@ -49,4 +49,11 @@ export const obtenerEstudiantePorId = async (
 export const searchEstudiantes = async (query: string, take = 10) => {
   const res = await api.get(API_ROUTES.estudiante.search, { params: { query, take } });
   return res.data as Array<Estudiante>;
+};
+
+export const selectorEstudiantesSinMatricula = async (): Promise<SelectorOption[]> => {
+  const response = await api.get<SelectorOption[]>(
+    API_ROUTES.estudiante.selector
+  );
+  return response.data;
 };

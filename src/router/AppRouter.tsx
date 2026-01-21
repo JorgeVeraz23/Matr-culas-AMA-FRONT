@@ -18,6 +18,8 @@ import MateriasPage from "../pages/materia/MostrarMateriaPage";
 import CreateMateriaForm from "../pages/materia/CreateMateriaPage";
 import OfertasPage from "../pages/ofertas/OfertasPage";
 import CreateOfertaPage from "../pages/ofertas/CreateOfertaPage";
+import CreateMatriculaPage from "../pages/matricula/CreateMatriculaPage";
+import MatriculasPage from "../pages/matricula/MatriculasPage";
 
 export const AppRouter: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -44,6 +46,8 @@ export const AppRouter: React.FC = () => {
             <Route path="/materia" element={<MateriasPage />} />
             <Route path="/materia/create" element={<CreateMateriaForm />} />
             <Route path="/students" element={<StudentsPage />} />
+            <Route path="/matricula/create" element={<CreateMatriculaPage />} />
+            <Route path="/matricula" element={<MatriculasPage />} />
             <Route path="/students/create" element={<CreateStudentForm />} />
             <Route path="/enrollments" element={<EnrollmentsPage />} />
             <Route path="/documents" element={<DocumentsPage />} />

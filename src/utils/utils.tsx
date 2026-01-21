@@ -8,7 +8,8 @@ export const API_ROUTES = {
         eliminar: `${API_BASE_URL}Estudiante/EliminarEstudiante`,
         listar: `${API_BASE_URL}Estudiante/GetAllEstudiantes`,
         obtenerPorId: `${API_BASE_URL}Estudiante/ObtenerEstudiante`,
-        search: `${API_BASE_URL}Estudiante/Search`
+        search: `${API_BASE_URL}Estudiante/Search`,
+        selector: `${API_BASE_URL}Estudiante/SelectorEstudiante`
     },
     materia: {
         crear: `${API_BASE_URL}Materia/CrearMateria`,
@@ -31,11 +32,11 @@ export const API_ROUTES = {
     },
     matricula: {
         obtenerPorId: `${API_BASE_URL}Matricula/ObtenerMatriculaPorId`,
-        crear: `${API_BASE_URL}Matricula/CrearMatricula`,
+        crear: `${API_BASE_URL}Matricula/Crear`,
         eliminar: `${API_BASE_URL}Matricula/EliminarMateria`,
         obtenerMateriaPorIdEstudiante: `${API_BASE_URL}ObtenerMatriculaPorEstudiante`,
-        actualizar: `${API_BASE_URL}Matricula/ActualizarMatricula`
-
+        actualizar: `${API_BASE_URL}Matricula/ActualizarMatricula`,
+        getAll: `${API_BASE_URL}Matricula/GetAll`,
     },
     auth: {
         login: `${API_BASE_URL}Auth/login`,
@@ -43,7 +44,8 @@ export const API_ROUTES = {
     },
     gradoParalelo: {
         disponibles: `${API_BASE_URL}GradoParalelo/Disponibles`,
-        crear: `${API_BASE_URL}GradoParalelo/Crear`
+        crear: `${API_BASE_URL}GradoParalelo/Crear`,
+        cuposDisponiblesPorEstudiante: `${API_BASE_URL}GradoParalelo/GetCuposDisponibles`
     }, 
     anioLectivo: {
         selector: `${API_BASE_URL}AnioLectivo/SelectorAnioLectivo`

@@ -36,7 +36,7 @@ export const Sidebar: React.FC = () => {
     { label: "Materias", icon: <BookmarkIcon />, to: "/materia" },
     { label: "Estudiantes", icon: <SchoolIcon />, to: "/students" },
     { label: "Ofertas", icon: <BookmarkIcon />, to: "/ofertas" },
-    { label: "Matrículas", icon: <AssignmentIcon />, to: "/enrollments" },
+    { label: "Matrículas", icon: <AssignmentIcon />, to: "/matricula" },
     { label: "Documentos digitales", icon: <DescriptionIcon />, to: "/documents" },
     { label: "Configuración", icon: <SettingsIcon />, to: "/settings" }
   ];

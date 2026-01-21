@@ -1,4 +1,4 @@
-import { CrearOferta, OfertasDisponibles } from "../types";
+import { CrearOferta, CupoDisponible, OfertasDisponibles } from "../types";
 import { API_ROUTES } from "../utils/utils";
 import { api } from "./apitClient";
 
@@ -22,3 +22,18 @@ export async function listarOfertas(filters?: {
   return res.data;
 }
 
+
+
+
+
+export const obtenerCuposDisponiblesPorEstudiante = async (
+  idEstudiante: number
+): Promise<CupoDisponible[]> => {
+  const response = await api.get<CupoDisponible[]>(
+    API_ROUTES.gradoParalelo.cuposDisponiblesPorEstudiante,
+    {
+      params: { idEstudiante },
+    }
+  );
+  return response.data;
+};

@@ -7,6 +7,37 @@ export interface EstudianteInput {
   nivel: number;
 }
 
+export interface CrearMatricula {
+  estudianteId: number;
+  gradoParaleloId: number;
+}
+
+export interface CupoDisponible {
+  gradoParaleloId: number;
+  paraleloId: number;
+  gradoNombre: string;
+  paraleloNombre: string;
+  anioLectivo: string;
+  cupos: number;
+  ocupados: number;
+  disponibles: number;
+}
+
+
+export type MatriculaResponseDto = {
+  id: number;
+  estudianteId: number;
+  estudianteNombre: string;
+
+  gradoParaleloId: number;
+  gradoNombre: string;
+  paraleloNombre: string;
+  periodo: string;
+
+  estadoMatricula: string;
+  fechaMatricula: string; // viene como ISO string
+};
+
 
 export interface SelectorOption {
   key: number;
@@ -15,11 +46,19 @@ export interface SelectorOption {
 export interface Estudiante {
   id: number;
   nombre: string;
+  apellido: string;
+  fechaNacimiento: string;
   cedula: string;
   representante: string;
+  cedulaRepresentante: string;
+  telefonoRepresentante: string;
+  correoRepresentante: string;
   telefono: string;
   correo: string;
+  direccion: string;
   nivel: number;
+  ultimoGradoAprobado: number;
+  genero: string;
 }
 
 export interface Materia {
