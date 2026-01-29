@@ -8,6 +8,7 @@ import { EnrollmentsPage } from "../pages/EnrollmentsPage";
 import { DocumentsPage } from "../pages/DocumentsPage";
 import { SettingsPage } from "../pages/SettingsPage";
 import StudentsPage from "../pages/students/StudentsPage";
+import ChangePasswordPage from "../pages/auth/changuePassword";
 import NotFoundPage from "../pages/NotFoundPage";
 import CreateStudentForm from "../pages/students/CreateStudentsPage";
 import ParalelosPage from "../pages/paralelo/ParaleloPage";
@@ -20,6 +21,8 @@ import OfertasPage from "../pages/ofertas/OfertasPage";
 import CreateOfertaPage from "../pages/ofertas/CreateOfertaPage";
 import CreateMatriculaPage from "../pages/matricula/CreateMatriculaPage";
 import MatriculasPage from "../pages/matricula/MatriculasPage";
+import CreateUserForm from "../pages/usuarios/CreateUserPage";
+import UsersPage from "../pages/usuarios/UsuarioPage";
 
 export const AppRouter: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -43,6 +46,9 @@ export const AppRouter: React.FC = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/cambiar-contrasena" element={<ChangePasswordPage />} />
+            <Route path="/usuarios/crear" element={<CreateUserForm />} />
+            <Route path="/usuarios" element={<UsersPage />} />
             <Route path="/materia" element={<MateriasPage />} />
             <Route path="/materia/create" element={<CreateMateriaForm />} />
             <Route path="/students" element={<StudentsPage />} />

@@ -1,5 +1,5 @@
 export const API_BASE_URL = "https://localhost:44349/api/";
-
+// export const API_BASE_URL = "https://matriculasama-api-hcgjfpc9fha2bmar.brazilsouth-01.azurewebsites.net/api/";
 
 export const API_ROUTES = {
     estudiante: {
@@ -40,7 +40,8 @@ export const API_ROUTES = {
     },
     auth: {
         login: `${API_BASE_URL}Auth/login`,
-        register: `${API_BASE_URL}Auth/register`
+        register: `${API_BASE_URL}Auth/register`,
+        changepassword: `${API_BASE_URL}Auth/change-password`
     },
     gradoParalelo: {
         disponibles: `${API_BASE_URL}GradoParalelo/Disponibles`,
@@ -49,5 +50,24 @@ export const API_ROUTES = {
     }, 
     anioLectivo: {
         selector: `${API_BASE_URL}AnioLectivo/SelectorAnioLectivo`
+    },
+    rol: {
+        selector: `${API_BASE_URL}Role/GetAllRoles`
+    },
+      users: {
+        getAll: `${API_BASE_URL}Users/ObtenerUsuarios`,
+        crearUsuario: `${API_BASE_URL}Users/CrearUsuario`,
+
+        getById: (id: string) =>
+            `${API_BASE_URL}Users/ObtenerUsuario/${id}`,
+
+        actualizarUsuario: (id: string) =>
+            `${API_BASE_URL}Users/ActualizarUsuario/${id}`,
+
+        eliminarUsuario: (id: string) =>
+            `${API_BASE_URL}Users/DesactivarUsuario/${id}`,
+
+        reactivarUsuario: (id: string) =>
+            `${API_BASE_URL}Users/ReactivarUsuario/${id}`,
     }
 } as const;

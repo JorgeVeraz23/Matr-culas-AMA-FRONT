@@ -3,12 +3,9 @@ import {
   Alert,
   Box,
   Button,
-  FormControl,
+  Chip,
   IconButton,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
   Snackbar,
   Table,
   TableBody,
@@ -17,78 +14,80 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TextField,
+  Tooltip,
   Typography,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
-import ModalGenérico from "../../components/common/ModalEdit";
 import ModalSweetAlert from "../../components/common/ModalSweetAlert";
 
-import { editarMateria, listarMateria, eliminarMateria } from "../../services/materiaService";
-import { api } from "../../services/apitClient";
-import { API_ROUTES } from "../../utils/utils";
-import { Materia } from "../../types";
-
-type GradoOption = { key: number; value: string };
+// import { listarMaterias, editarMateria, eliminarMateria } from "../../services/materiaService";
+import { listarMaterias, editarMateria, eliminarMateria } from "../../services/materia/materiaService";
+import { selectorGrado } from "../../services/gradoService";
+import { MateriaResponse, SelectorOption } from "../../types";
 
 const MateriasPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const [materias, setMaterias] = useState<Materia[]>([]);
-  const [grados, setGrados] = useState<GradoOption[]>([]);
-  const [gradoSeleccionado, setGradoSeleccionado] = useState<number>(0);
+  const [materias, setMaterias] = useState<MateriaResponse[]>([]);
+  const [grados, setGrados] = useState<SelectorOption[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingGrados, setLoadingGrados] = useState(true);
+  const [error, setError] = useState("");
 
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedMateria, setSelectedMateria] = useState<any | null>(null);
-
-  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
-  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
-
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // 🔹 Cargar grados una sola vez
+  const [selectedMateria, setSelectedMateria] = useState<MateriaResponse | null>(null);
+  const [openModal, setOpenModal] = useState(false);
+
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
   useEffect(() => {
-    const fetchGrados = async () => {
-      try {
-        const res = await api.get<GradoOption[]>(API_ROUTES.grado.selector);
-        setGrados(res.data ?? []);
-      } catch (err) {
-        console.error("Error cargando grados", err);
-        setSnackbarSeverity("error");
-        setSnackbarMessage("No se pudieron cargar los grados");
-        setOpenSnackbar(true);
-      }
-    };
+    fetchMaterias();
     fetchGrados();
   }, []);
 
-  // 🔹 Cargar materias cada vez que cambie el grado seleccionado
-  useEffect(() => {
-    fetchMaterias();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gradoSeleccionado]);
-
   const fetchMaterias = async () => {
     try {
-      const data = await listarMateria(gradoSeleccionado > 0 ? gradoSeleccionado : undefined);
+      setLoading(true);
+      const data = await listarMaterias();
       setMaterias(data);
-      setPage(0);
     } catch (err) {
-      console.error("Error al cargar materias", err);
-      setSnackbarSeverity("error");
-      setSnackbarMessage("Error al cargar materias");
-      setOpenSnackbar(true);
+      console.error(err);
+      setError("Error al cargar materias");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleEliminar = async (id?: number) => {
-    if (!id) return;
+  const fetchGrados = async () => {
+    try {
+      setLoadingGrados(true);
+      const data = await selectorGrado();
+      setGrados(data);
+    } catch (err) {
+      console.error("Error cargando grados", err);
+    } finally {
+      setLoadingGrados(false);
+    }
+  };
 
+  const handleCreate = () => navigate("/materia/create");
+
+  const handleEliminar = async (id: number) => {
     ModalSweetAlert("delete", async () => {
       try {
         await eliminarMateria(id);
@@ -97,162 +96,249 @@ const MateriasPage: React.FC = () => {
         setSnackbarMessage("Materia eliminada correctamente");
         setOpenSnackbar(true);
       } catch (err) {
-        console.error("Error al eliminar materia", err);
+        console.error(err);
         setSnackbarSeverity("error");
-        setSnackbarMessage("Hubo un error al eliminar la materia");
+        setSnackbarMessage("Error al eliminar la materia");
         setOpenSnackbar(true);
       }
     });
   };
 
-  const handleOpenModal = (materia: any) => {
-    setSelectedMateria(materia);
-    setOpenModal(true);
-  };
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return materias;
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setSelectedMateria(null);
-  };
+    return materias.filter((m) =>
+      m.nombre.toLowerCase().includes(q) ||
+      m.gradoNombre.toLowerCase().includes(q)
+    );
+  }, [materias, search]);
 
-  const handleSaveChanges = async (data: any) => {
-    try {
-      await editarMateria({
-        id: data.id,
-        nombre: data.nombre,
-        gradoId: data.gradoId, // 👈 si tu modal también lo edita luego
-      });
-
-      setMaterias((prev) =>
-        prev.map((m) => (m.id === data.id ? { ...m, nombre: data.nombre, gradoId: data.gradoId } : m))
-      );
-
-      setSnackbarSeverity("success");
-      setSnackbarMessage("Materia actualizada correctamente");
-      setOpenSnackbar(true);
-      handleCloseModal();
-    } catch (err) {
-      console.error("Error al actualizar materia", err);
-      setSnackbarSeverity("error");
-      setSnackbarMessage("Hubo un error al actualizar la materia");
-      setOpenSnackbar(true);
-    }
-  };
-
-  const handleCreate = () => navigate("/materias/create");
-
-  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const gradoLabel = useMemo(() => {
-    const found = grados.find((g) => g.key === gradoSeleccionado);
-    return found?.value ?? "Todos";
-  }, [grados, gradoSeleccionado]);
+  const paginated = useMemo(() => {
+    return filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  }, [filtered, page, rowsPerPage]);
 
   return (
-    <Box>
-      {/* HEADER */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", mb: 2, gap: 2, flexWrap: "wrap" }}>
+    <Box sx={{ maxWidth: 1200, mx: "auto", p: { xs: 1, sm: 2 } }}>
+      {/* Header */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
         <Box>
-          <Typography variant="h6" sx={{ fontWeight: 800 }}>
+          <Typography variant="h5" sx={{ fontWeight: 800 }}>
             Materias
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Filtro actual: <b>{gradoLabel}</b>
+            {loading ? "Cargando..." : `${filtered.length} registro(s)`}
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", flexWrap: "wrap" }}>
-          {/* SELECT GRADO */}
-          <FormControl size="small" sx={{ minWidth: 220 }}>
-            <InputLabel id="grado-filter-label">Grado</InputLabel>
-            <Select
-              labelId="grado-filter-label"
-              label="Grado"
-              value={gradoSeleccionado}
-              onChange={(e) => setGradoSeleccionado(Number(e.target.value))}
-            >
-              <MenuItem value={0}>Todos</MenuItem>
-              {grados.map((g) => (
-                <MenuItem key={g.key} value={g.key}>
-                  {g.value}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+        <Box sx={{ display: "flex", gap: 1.5 }}>
+          <TextField
+            size="small"
+            placeholder="Buscar por materia o grado..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(0);
+            }}
+            InputProps={{
+              startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1 }} />,
+            }}
+            sx={{ minWidth: 320 }}
+          />
 
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleCreate}
-          >
-            Crear Materia
+          <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreate}>
+            Crear
           </Button>
         </Box>
       </Box>
 
-      {/* TABLE */}
-      <TableContainer component={Paper} elevation={3}>
-        <Table aria-label="materias table">
+      {error && <Alert severity="error">{error}</Alert>}
+
+      {/* Tabla */}
+      <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 2 }}>
+        <Table>
           <TableHead>
             <TableRow>
-              <TableCell><strong>Nombre</strong></TableCell>
-              <TableCell><strong>Grado</strong></TableCell>
-              <TableCell><strong>Acciones</strong></TableCell>
+              <TableCell sx={{ fontWeight: 800 }}>Materia</TableCell>
+              <TableCell sx={{ fontWeight: 800 }}>Grado</TableCell>
+              <TableCell sx={{ fontWeight: 800, width: 140 }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {materias
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((m) => (
-                <TableRow key={m.id}>
-                  <TableCell>{m.nombre}</TableCell>
-                  <TableCell>{(m as any).gradoNombre ?? m.gradoId}</TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleOpenModal(m)}>
+            {paginated.map((m) => (
+              <TableRow key={m.id} hover>
+                <TableCell>
+                  <Typography sx={{ fontWeight: 700 }}>{m.nombre}</Typography>
+                </TableCell>
+
+                <TableCell>
+                  <Chip size="small" label={m.gradoNombre} variant="outlined" />
+                </TableCell>
+
+                <TableCell>
+                  <Tooltip title="Editar">
+                    <IconButton
+                      onClick={() => {
+                        setSelectedMateria(m);
+                        setOpenModal(true);
+                      }}
+                    >
                       <EditIcon color="primary" />
                     </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Eliminar">
                     <IconButton onClick={() => handleEliminar(m.id)}>
                       <DeleteIcon color="error" />
                     </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
+                  </Tooltip>
+                </TableCell>
+              </TableRow>
+            ))}
+
+            {!loading && paginated.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={3}>
+                  <Typography color="text.secondary">
+                    No hay materias que coincidan con la búsqueda.
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
 
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={materias.length}
+          count={filtered.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
         />
       </TableContainer>
 
-      {/* MODAL EDIT */}
-      <ModalGenérico
-        open={openModal}
-        onClose={handleCloseModal}
-        onSave={handleSaveChanges}
-        data={selectedMateria}
-        fields={[
-          { label: "Nombre", name: "nombre" },
-          // Si luego quieres editar grado desde el modal, tu ModalEdit debe soportar select
-          // { label: "GradoId", name: "gradoId" },
-        ]}
-      />
+      {/* MODAL EDITAR */}
+      {openModal && selectedMateria && (
+        <Box
+          sx={{
+            position: "fixed",
+            inset: 0,
+            bgcolor: "rgba(0,0,0,.35)",
+            display: "grid",
+            placeItems: "center",
+            zIndex: 1300,
+            p: 2,
+          }}
+          onClick={() => setOpenModal(false)}
+        >
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: 520,
+              bgcolor: "background.paper",
+              borderRadius: 2,
+              p: 3,
+              boxShadow: 6,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 900, mb: 2 }}>
+              Editar Materia
+            </Typography>
 
-      {/* SNACKBAR */}
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
-        <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity} variant="filled">
+            <TextField
+              label="Nombre"
+              fullWidth
+              margin="normal"
+              value={selectedMateria.nombre}
+              onChange={(e) =>
+                setSelectedMateria({ ...selectedMateria, nombre: e.target.value })
+              }
+            />
+
+            <FormControl fullWidth margin="normal" required disabled={loadingGrados}>
+              <InputLabel id="grado-edit">Grado</InputLabel>
+              <Select
+                labelId="grado-edit"
+                label="Grado"
+                value={selectedMateria.gradoId}
+                onChange={(e) =>
+                  setSelectedMateria({
+                    ...selectedMateria,
+                    gradoId: Number(e.target.value),
+                  })
+                }
+              >
+                <MenuItem value={0} disabled>
+                  Selecciona un grado
+                </MenuItem>
+                {grados.map((g) => (
+                  <MenuItem key={g.key} value={g.key}>
+                    {g.value}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 1.5 }}>
+              <Button variant="outlined" onClick={() => setOpenModal(false)}>
+                Cancelar
+              </Button>
+              <Button
+                variant="contained"
+                onClick={async () => {
+                  try {
+                    await editarMateria(selectedMateria.id, {
+                      nombre: selectedMateria.nombre.trim(),
+                      gradoId: selectedMateria.gradoId,
+                    });
+
+                    setMaterias((prev) =>
+                      prev.map((m) =>
+                        m.id === selectedMateria.id
+                          ? {
+                              ...m,
+                              nombre: selectedMateria.nombre,
+                              gradoId: selectedMateria.gradoId,
+                              gradoNombre:
+                                grados.find((g) => g.key === selectedMateria.gradoId)
+                                  ?.value ?? m.gradoNombre,
+                            }
+                          : m
+                      )
+                    );
+
+                    setSnackbarSeverity("success");
+                    setSnackbarMessage("Materia actualizada correctamente");
+                    setOpenSnackbar(true);
+                    setOpenModal(false);
+                  } catch (err) {
+                    console.error(err);
+                    setSnackbarSeverity("error");
+                    setSnackbarMessage("Error al actualizar la materia");
+                    setOpenSnackbar(true);
+                  }
+                }}
+              >
+                Guardar cambios
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      )}
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={4500}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert severity={snackbarSeverity} variant="filled">
           {snackbarMessage}
         </Alert>
       </Snackbar>

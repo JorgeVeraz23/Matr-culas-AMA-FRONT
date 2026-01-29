@@ -11,16 +11,25 @@ import {
   Typography,
   useMediaQuery
 } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/SpaceDashboard";
-import ClassIcon from "@mui/icons-material/Class";
-import PersonIcon from "@mui/icons-material/Person";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import PeopleIcon from "@mui/icons-material/People";
+import GroupsIcon from "@mui/icons-material/Groups";
+import EventIcon from "@mui/icons-material/Event";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import SchoolIcon from "@mui/icons-material/School";
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-import DescriptionIcon from "@mui/icons-material/Description";
-import AssignmentIcon from "@mui/icons-material/Assignment";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
+import FolderIcon from "@mui/icons-material/Folder";
 import SettingsIcon from "@mui/icons-material/Settings";
+import CastForEducation  from "@mui/icons-material/CastForEducation";
+import  FamilyRestroom  from "@mui/icons-material/FamilyRestroom";
+import DateRange from "@mui/icons-material/DateRange";
+import Reportes from "@mui/icons-material/Report";
+import ViewModule  from "@mui/icons-material/ViewModule";
+
 import { NavLink, useLocation } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
+
 
 const drawerWidth = 260;
 
@@ -29,17 +38,21 @@ export const Sidebar: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
 
-  const menuItems = [
-    { label: "Dashboard", icon: <DashboardIcon />, to: "/dashboard" },
-    { label: "Paralelos", icon: <BookmarkIcon />, to: "/paralelo" },
-    { label: "Año Lectivo", icon: <BookmarkIcon />, to: "/añoLectivo" },
-    { label: "Materias", icon: <BookmarkIcon />, to: "/materia" },
-    { label: "Estudiantes", icon: <SchoolIcon />, to: "/students" },
-    { label: "Ofertas", icon: <BookmarkIcon />, to: "/ofertas" },
-    { label: "Matrículas", icon: <AssignmentIcon />, to: "/matricula" },
-    { label: "Documentos digitales", icon: <DescriptionIcon />, to: "/documents" },
-    { label: "Configuración", icon: <SettingsIcon />, to: "/settings" }
-  ];
+const menuItems = [
+  { label: "Dashboard", icon: <DashboardIcon />, to: "/dashboard" },
+  { label: "Usuarios", icon: <PeopleIcon />, to: "/usuarios" },
+  { label: "Paralelos", icon: <ViewModule />, to: "/paralelo" },
+  { label: "Año Lectivo", icon: <DateRange />, to: "/anio-lectivo" },
+  { label: "Representantes", icon: <FamilyRestroom />, to: "/representantes" },
+  { label: "Profesores", icon: <CastForEducation />, to: "/profesores" },
+  { label: "Materias", icon: <MenuBookIcon />, to: "/materia" },
+  { label: "Estudiantes", icon: <SchoolIcon />, to: "/students" },
+  { label: "Cupos", icon: <LocalOfferIcon />, to: "/ofertas" },
+  { label: "Reportes", icon: <Reportes />, to: "/reportes" },
+  { label: "Matrículas", icon: <HowToRegIcon />, to: "/matricula" },
+  { label: "Documentos digitales", icon: <FolderIcon />, to: "/documents" },
+  { label: "Configuración", icon: <SettingsIcon />, to: "/settings" }
+];
 
   const content = (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>

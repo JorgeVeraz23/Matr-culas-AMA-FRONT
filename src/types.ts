@@ -114,3 +114,49 @@ export interface OfertasDisponibles {
   ocupados: number;
   disponibles: number;
 }
+
+export type Usuario = {
+  id: string;
+  userName: string;
+  email: string | null;
+  isActive: boolean;
+  role: string | null;
+};
+
+export type UsuarioCrearDTO = {
+  username: string;
+  email?: string | null;
+  password: string;
+  role: string; // 1 solo rol
+};
+
+export type UsuarioEditarDTO = {
+  username?: string;
+  email?: string | null;  // si mandas "" o null => limpia email
+  isActive?: boolean;
+  role?: string; // 1 solo rol
+};
+
+export type ResetPasswordDTO = {
+  newPassword: string;
+};
+
+export type Rol = {
+  id: string;
+  name: string;
+};
+
+
+export interface MateriaInput {
+  nombre: string;
+  gradoId: number;
+}
+
+export interface MateriaResponse {
+  id: number;
+  nombre: string;
+  gradoId: number;
+  gradoNombre: string;
+}
+
+

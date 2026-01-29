@@ -18,6 +18,15 @@ export type AuthUser = {
   role: string;
 };
 
+export type ChangePasswordDTO = {
+  currentPassword: string;
+  newPassword: string;
+};
+
+export const cambiarContrasena = async (datos: ChangePasswordDTO): Promise<any> => {
+  const res = await api.post(API_ROUTES.auth.changepassword, datos);
+  return res.data;
+};
 
 
 

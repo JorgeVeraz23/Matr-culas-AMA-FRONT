@@ -16,6 +16,8 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
+import LockResetIcon from "@mui/icons-material/LockReset";
+
 
 export const Topbar: React.FC = () => {
   const navigate = useNavigate();
@@ -153,6 +155,19 @@ export const Topbar: React.FC = () => {
             <SettingsIcon fontSize="small" style={{ marginRight: 10 }} />
             Configuración
           </MenuItem>
+
+             <Divider />
+
+             <MenuItem
+  onClick={() => {
+    handleClose();
+    navigate("/cambiar-contrasena");
+  }}
+>
+  <LockResetIcon fontSize="small" style={{ marginRight: 10 }} />
+  Cambiar contraseña
+</MenuItem>
+
 
           <Divider />
 
