@@ -31,15 +31,17 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
 import ModalSweetAlert from "../../components/common/ModalSweetAlert";
-import { listarProfesores, editarProfesor, eliminarProfesor } from "../../services/profesorService";
-import { ProfesorCreateDto, ProfesorResponseDto } from "../../types";
+import { listarRepresentantes, eliminarRepresentante, editarRepresentante } from "../../services/representanteService";
+import { RepresentanteResponseDto, RepresentanteUpdateDto } from "../../types";
 
 const TIPOS_DOCUMENTO = ["CEDULA", "PASAPORTE", "RUC", "OTRO"] as const;
 
-const ProfesoresPage: React.FC = () => {
+const RepresentantesPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const [profesores, setProfesores] = useState<ProfesorResponseDto[]>([]);
+  const [representantes, setRepresentantes] = useState<RepresentanteResponseDto[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -47,8 +49,7 @@ const ProfesoresPage: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [selectedProfesor, setSelectedProfesor] =
-    useState<ProfesorResponseDto | null>(null);
+  const [selected, setSelected] = useState<RepresentanteResponseDto | null>(null);
   const [openModal, setOpenModal] = useState(false);
 
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -57,33 +58,34 @@ const ProfesoresPage: React.FC = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
-    fetchProfesores();
+    fetchRepresentantes();
   }, []);
 
-  const fetchProfesores = async () => {
+  const fetchRepresentantes = async (q?: string) => {
     try {
       setLoading(true);
-      const data = await listarProfesores();
-      setProfesores(data);
+      const data = await listarRepresentantes(q);
+      setRepresentantes(data);
+      setError("");
     } catch {
-      setError("Error al cargar profesores");
+      setError("Error al cargar representantes");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreate = () => navigate("/profesor/create");
+  const handleCreate = () => navigate("/representantes/create");
 
   const handleEliminar = async (id: number) => {
     ModalSweetAlert("delete", async () => {
       try {
-        await eliminarProfesor(id);
-        setProfesores((prev) => prev.filter((p) => p.id !== id));
+        await eliminarRepresentante(id);
+        setRepresentantes((prev) => prev.filter((r) => r.id !== id));
         setSnackbarSeverity("success");
-        setSnackbarMessage("Profesor eliminado correctamente");
+        setSnackbarMessage("Representante eliminado correctamente");
       } catch {
         setSnackbarSeverity("error");
-        setSnackbarMessage("Error al eliminar el profesor");
+        setSnackbarMessage("Error al eliminar el representante");
       } finally {
         setOpenSnackbar(true);
       }
@@ -92,22 +94,21 @@ const ProfesoresPage: React.FC = () => {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return profesores;
+    if (!q) return representantes;
 
-    return profesores.filter((p) => {
-      const full = (p.nombreCompleto ?? `${p.nombres} ${p.apellidos}`).toLowerCase();
-      const doc = (p.numeroDocumento ?? "").toLowerCase();
-      const email = (p.email ?? "").toLowerCase();
-      const titulo = (p.tituloProfesional ?? "").toLowerCase();
-
+    return representantes.filter((r) => {
+      const full = (r.nombreCompleto ?? `${r.nombres} ${r.apellidos}`).toLowerCase();
+      const doc = (r.numeroDocumento ?? "").toLowerCase();
+      const email = (r.email ?? "").toLowerCase();
+      const dir = (r.direccion ?? "").toLowerCase();
       return (
         full.includes(q) ||
         doc.includes(q) ||
         email.includes(q) ||
-        titulo.includes(q)
+        dir.includes(q)
       );
     });
-  }, [profesores, search]);
+  }, [representantes, search]);
 
   const paginated = useMemo(
     () => filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
@@ -116,21 +117,21 @@ const ProfesoresPage: React.FC = () => {
 
   const getInitials = (nombreCompleto?: string, nombres?: string, apellidos?: string) => {
     const txt = (nombreCompleto ?? `${nombres ?? ""} ${apellidos ?? ""}`).trim();
-    if (!txt) return "PR";
+    if (!txt) return "RP";
     const parts = txt.split(" ").filter(Boolean);
-    const a = parts[0]?.[0] ?? "P";
-    const b = parts[1]?.[0] ?? "R";
+    const a = parts[0]?.[0] ?? "R";
+    const b = parts[1]?.[0] ?? "P";
     return (a + b).toUpperCase();
   };
 
-  const buildUpdatePayload = (p: ProfesorResponseDto): ProfesorCreateDto => ({
-    nombres: p.nombres,
-    apellidos: p.apellidos,
-    tituloProfesional: p.tituloProfesional,
-    tipoDocumento: p.tipoDocumento,
-    numeroDocumento: p.numeroDocumento,
-    telefono: p.telefono ?? null,
-    email: p.email ?? null,
+  const buildUpdatePayload = (r: RepresentanteResponseDto): RepresentanteUpdateDto => ({
+    nombres: r.nombres,
+    apellidos: r.apellidos,
+    tipoDocumento: r.tipoDocumento,
+    numeroDocumento: r.numeroDocumento,
+    telefono: r.telefono ?? null,
+    email: r.email ?? null,
+    direccion: r.direccion ?? null,
   });
 
   return (
@@ -142,14 +143,15 @@ const ProfesoresPage: React.FC = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: 2,
         }}
       >
         <Box>
           <Typography sx={{ fontSize: 28, fontWeight: 900 }}>
-            Profesores
+            Representantes
           </Typography>
           <Typography color="text.secondary">
-            Gestiona y organiza el personal docente
+            Gestiona y organiza los representantes legales
           </Typography>
         </Box>
 
@@ -159,7 +161,7 @@ const ProfesoresPage: React.FC = () => {
           onClick={handleCreate}
           sx={{ px: 3, py: 1.2, fontWeight: 700 }}
         >
-          Crear profesor
+          Crear representante
         </Button>
       </Box>
 
@@ -181,7 +183,7 @@ const ProfesoresPage: React.FC = () => {
         <SearchIcon color="action" />
         <TextField
           variant="standard"
-          placeholder="Buscar por nombre, documento, email o título..."
+          placeholder="Buscar por nombre, documento, email o dirección..."
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -209,7 +211,7 @@ const ProfesoresPage: React.FC = () => {
           <TableHead sx={{ bgcolor: "#F8FAFC" }}>
             <TableRow>
               <TableCell sx={{ fontSize: 12, fontWeight: 800 }}>
-                PROFESOR
+                REPRESENTANTE
               </TableCell>
 
               <TableCell sx={{ fontSize: 12, fontWeight: 800 }}>
@@ -218,6 +220,10 @@ const ProfesoresPage: React.FC = () => {
 
               <TableCell sx={{ fontSize: 12, fontWeight: 800 }}>
                 CONTACTO
+              </TableCell>
+
+              <TableCell sx={{ fontSize: 12, fontWeight: 800 }}>
+                DIRECCIÓN
               </TableCell>
 
               <TableCell sx={{ fontSize: 12, fontWeight: 800 }}>
@@ -231,8 +237,8 @@ const ProfesoresPage: React.FC = () => {
           </TableHead>
 
           <TableBody>
-            {paginated.map((p) => (
-              <TableRow key={p.id} hover>
+            {paginated.map((r) => (
+              <TableRow key={r.id} hover>
                 <TableCell>
                   <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                     <Avatar
@@ -242,15 +248,15 @@ const ProfesoresPage: React.FC = () => {
                         fontWeight: 800,
                       }}
                     >
-                      {getInitials(p.nombreCompleto, p.nombres, p.apellidos)}
+                      {getInitials(r.nombreCompleto, r.nombres, r.apellidos)}
                     </Avatar>
 
                     <Box>
                       <Typography fontWeight={700}>
-                        {p.nombreCompleto || `${p.nombres} ${p.apellidos}`}
+                        {r.nombreCompleto || `${r.nombres} ${r.apellidos}`}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {p.tituloProfesional} • ID #{p.id}
+                        ID #{r.id}
                       </Typography>
                     </Box>
                   </Box>
@@ -258,26 +264,32 @@ const ProfesoresPage: React.FC = () => {
 
                 <TableCell>
                   <Typography fontWeight={700}>
-                    {p.tipoDocumento}: {p.numeroDocumento}
+                    {r.tipoDocumento}: {r.numeroDocumento}
                   </Typography>
                 </TableCell>
 
                 <TableCell>
                   <Typography fontWeight={700}>
-                    {p.email || "—"}
+                    {r.email || "—"}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {p.telefono || "—"}
+                    {r.telefono || "—"}
+                  </Typography>
+                </TableCell>
+
+                <TableCell>
+                  <Typography fontWeight={700}>
+                    {r.direccion || "—"}
                   </Typography>
                 </TableCell>
 
                 <TableCell>
                   <Chip
-                    label={p.isActive ? "Activo" : "Inactivo"}
+                    label={r.isActive ? "Activo" : "Inactivo"}
                     size="small"
                     sx={{
-                      bgcolor: p.isActive ? "success.light" : "grey.200",
-                      color: p.isActive ? "success.main" : "text.secondary",
+                      bgcolor: r.isActive ? "success.light" : "grey.200",
+                      color: r.isActive ? "success.main" : "text.secondary",
                       fontWeight: 700,
                     }}
                   />
@@ -287,7 +299,7 @@ const ProfesoresPage: React.FC = () => {
                   <Tooltip title="Editar">
                     <IconButton
                       onClick={() => {
-                        setSelectedProfesor(p);
+                        setSelected(r);
                         setOpenModal(true);
                       }}
                     >
@@ -296,7 +308,7 @@ const ProfesoresPage: React.FC = () => {
                   </Tooltip>
 
                   <Tooltip title="Eliminar">
-                    <IconButton onClick={() => handleEliminar(p.id)}>
+                    <IconButton onClick={() => handleEliminar(r.id)}>
                       <DeleteIcon fontSize="small" color="error" />
                     </IconButton>
                   </Tooltip>
@@ -306,9 +318,9 @@ const ProfesoresPage: React.FC = () => {
 
             {!loading && paginated.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} sx={{ py: 6 }}>
+                <TableCell colSpan={6} sx={{ py: 6 }}>
                   <Typography align="center" color="text.secondary">
-                    No hay profesores registrados
+                    No hay representantes registrados
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -331,7 +343,7 @@ const ProfesoresPage: React.FC = () => {
       </TableContainer>
 
       {/* MODAL EDIT */}
-      {openModal && selectedProfesor && (
+      {openModal && selected && (
         <Box
           sx={{
             position: "fixed",
@@ -344,56 +356,40 @@ const ProfesoresPage: React.FC = () => {
           onClick={() => setOpenModal(false)}
         >
           <Paper
-            sx={{ width: 560, p: 3, borderRadius: 3 }}
+            sx={{ width: 600, p: 3, borderRadius: 3 }}
             onClick={(e) => e.stopPropagation()}
           >
             <Typography fontWeight={900} mb={2}>
-              Editar profesor
+              Editar representante
             </Typography>
 
             <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: "1fr 1fr" }}>
               <TextField
                 label="Nombres"
                 fullWidth
-                value={selectedProfesor.nombres}
+                value={selected.nombres}
                 onChange={(e) =>
-                  setSelectedProfesor({ ...selectedProfesor, nombres: e.target.value })
+                  setSelected({ ...selected, nombres: e.target.value })
                 }
               />
               <TextField
                 label="Apellidos"
                 fullWidth
-                value={selectedProfesor.apellidos}
+                value={selected.apellidos}
                 onChange={(e) =>
-                  setSelectedProfesor({ ...selectedProfesor, apellidos: e.target.value })
+                  setSelected({ ...selected, apellidos: e.target.value })
                 }
               />
             </Box>
 
-            <TextField
-              label="Título profesional"
-              fullWidth
-              margin="normal"
-              value={selectedProfesor.tituloProfesional}
-              onChange={(e) =>
-                setSelectedProfesor({
-                  ...selectedProfesor,
-                  tituloProfesional: e.target.value,
-                })
-              }
-            />
-
-            <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: "1fr 1fr" }}>
+            <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: "1fr 1fr", mt: 2 }}>
               <FormControl fullWidth>
                 <InputLabel>Tipo documento</InputLabel>
                 <Select
                   label="Tipo documento"
-                  value={selectedProfesor.tipoDocumento}
+                  value={selected.tipoDocumento}
                   onChange={(e) =>
-                    setSelectedProfesor({
-                      ...selectedProfesor,
-                      tipoDocumento: String(e.target.value),
-                    })
+                    setSelected({ ...selected, tipoDocumento: String(e.target.value) })
                   }
                 >
                   {TIPOS_DOCUMENTO.map((t) => (
@@ -407,12 +403,9 @@ const ProfesoresPage: React.FC = () => {
               <TextField
                 label="Número documento"
                 fullWidth
-                value={selectedProfesor.numeroDocumento}
+                value={selected.numeroDocumento}
                 onChange={(e) =>
-                  setSelectedProfesor({
-                    ...selectedProfesor,
-                    numeroDocumento: e.target.value,
-                  })
+                  setSelected({ ...selected, numeroDocumento: e.target.value })
                 }
               />
             </Box>
@@ -421,26 +414,30 @@ const ProfesoresPage: React.FC = () => {
               <TextField
                 label="Teléfono"
                 fullWidth
-                value={selectedProfesor.telefono ?? ""}
+                value={selected.telefono ?? ""}
                 onChange={(e) =>
-                  setSelectedProfesor({
-                    ...selectedProfesor,
-                    telefono: e.target.value || null,
-                  })
+                  setSelected({ ...selected, telefono: e.target.value || null })
                 }
               />
               <TextField
                 label="Email"
                 fullWidth
-                value={selectedProfesor.email ?? ""}
+                value={selected.email ?? ""}
                 onChange={(e) =>
-                  setSelectedProfesor({
-                    ...selectedProfesor,
-                    email: e.target.value || null,
-                  })
+                  setSelected({ ...selected, email: e.target.value || null })
                 }
               />
             </Box>
+
+            <TextField
+              label="Dirección"
+              fullWidth
+              margin="normal"
+              value={selected.direccion ?? ""}
+              onChange={(e) =>
+                setSelected({ ...selected, direccion: e.target.value || null })
+              }
+            />
 
             <Divider sx={{ my: 2 }} />
 
@@ -450,12 +447,11 @@ const ProfesoresPage: React.FC = () => {
                 variant="contained"
                 onClick={async () => {
                   try {
-                    const payload = buildUpdatePayload(selectedProfesor);
-                    await editarProfesor(selectedProfesor.id, payload);
-
-                    await fetchProfesores();
+                    const payload = buildUpdatePayload(selected);
+                    await editarRepresentante(selected.id, payload);
+                    await fetchRepresentantes();
                     setSnackbarSeverity("success");
-                    setSnackbarMessage("Profesor actualizado");
+                    setSnackbarMessage("Representante actualizado");
                   } catch {
                     setSnackbarSeverity("error");
                     setSnackbarMessage("Error al actualizar");
@@ -485,4 +481,4 @@ const ProfesoresPage: React.FC = () => {
   );
 };
 
-export default ProfesoresPage;
+export default RepresentantesPage;

@@ -41,7 +41,7 @@ export const Sidebar: React.FC = () => {
     { label: "Paralelos", icon: <ViewModule />, to: "/paralelo" },
     { label: "Año Lectivo", icon: <DateRange />, to: "/anio-lectivo" },
     { label: "Representantes", icon: <FamilyRestroom />, to: "/representantes" },
-    { label: "Profesores", icon: <CastForEducation />, to: "/profesores" },
+    { label: "Profesores", icon: <CastForEducation />, to: "/profesor" },
     { label: "Materias", icon: <MenuBookIcon />, to: "/materia" },
     { label: "Estudiantes", icon: <SchoolIcon />, to: "/students" },
     { label: "Cupos", icon: <LocalOfferIcon />, to: "/ofertas" },

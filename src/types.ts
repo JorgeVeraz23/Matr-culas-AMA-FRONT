@@ -6,6 +6,46 @@ export interface EstudianteInput {
   nivel: number;
 }
 
+// ===============================
+// CREATE / UPDATE
+// ===============================
+export interface ProfesorCreateDto {
+  nombres: string;
+  apellidos: string;
+  tituloProfesional: string;
+  tipoDocumento: string;
+  numeroDocumento: string;
+  telefono?: string | null;
+  email?: string | null;
+}
+
+// ===============================
+// RESPONSE (GET / LIST)
+// ===============================
+export interface ProfesorResponseDto {
+  id: number;
+  nombres: string;
+  apellidos: string;
+  nombreCompleto: string;
+  tituloProfesional: string;
+  tipoDocumento: string;
+  numeroDocumento: string;
+  telefono?: string | null;
+  email?: string | null;
+  isActive?: boolean | null;
+}
+
+// ===============================
+// SEARCH (autocomplete / selector)
+// ===============================
+export interface ProfesorSearchDto {
+  id: number;
+  nombreCompleto: string;
+  numeroDocumento: string;
+  email?: string | null;
+}
+
+
 export interface CrearMatricula {
   estudianteId: number;
   gradoParaleloId: number;
@@ -37,6 +77,17 @@ export type MatriculaResponseDto = {
   fechaMatricula: string; // viene como ISO string
 };
 
+export interface MatriculaListado {
+  id: number;
+  estudianteId: number;
+  estudianteNombre: string;
+  gradoParaleloId: number;
+  gradoNombre: string;
+  paraleloNombre: string;
+  periodo: string;
+  estadoMatricula: string;
+  fechaMatricula: string; // ISO
+}
 
 export interface SelectorOption {
   key: number;
@@ -156,4 +207,45 @@ export interface MateriaResponse {
   gradoNombre: string;
 }
 
+// ===============================
+// CREATE
+// ===============================
+export interface RepresentanteCreateDto {
+  nombres: string;
+  apellidos: string;
+  tipoDocumento: string;
+  numeroDocumento: string;
+  telefono?: string | null;
+  email?: string | null;
+  direccion?: string | null;
+}
+
+// ===============================
+// UPDATE
+// ===============================
+export interface RepresentanteUpdateDto {
+  nombres: string;
+  apellidos: string;
+  tipoDocumento: string;
+  numeroDocumento: string;
+  telefono?: string | null;
+  email?: string | null;
+  direccion?: string | null;
+}
+
+// ===============================
+// RESPONSE (GET / LIST)
+// ===============================
+export interface RepresentanteResponseDto {
+  id: number;
+  nombres: string;
+  apellidos: string;
+  nombreCompleto: string;
+  tipoDocumento: string;
+  numeroDocumento: string;
+  telefono?: string | null;
+  email?: string | null;
+  direccion?: string | null;
+  isActive?: boolean | null;
+}
 

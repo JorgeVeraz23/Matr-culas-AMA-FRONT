@@ -16,9 +16,9 @@ import {
 import SaveIcon from "@mui/icons-material/Save";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
-
 import { crearRepresentante } from "../../services/representanteService";
 import { RepresentanteCreateDto } from "../../types";
+
 const TIPOS_DOCUMENTO = ["CEDULA", "PASAPORTE", "RUC", "OTRO"] as const;
 
 const isValidEmail = (email: string) =>
@@ -78,7 +78,7 @@ const CreateRepresentantePage: React.FC = () => {
     try {
       setSubmitting(true);
 
-      // Normaliza opcionales
+      // Normaliza opcionales (backend espera string? => puedes enviar null)
       const payload: RepresentanteCreateDto = {
         ...form,
         telefono: form.telefono?.trim() ? form.telefono.trim() : null,
