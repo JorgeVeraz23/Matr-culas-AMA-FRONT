@@ -43,6 +43,11 @@ export const API_ROUTES = {
         register: `${API_BASE_URL}Auth/register`,
         changepassword: `${API_BASE_URL}Auth/change-password`
     },
+    representante: {
+        crear: `${API_BASE_URL}Representante/CrearRepresentante`,
+        obtenerPorId: `${API_BASE_URL}Representante/ObtenerRepresentantePorId`,
+        selector: `${API_BASE_URL}Representante/selector`,  
+    },
     gradoParalelo: {
         disponibles: `${API_BASE_URL}GradoParalelo/Disponibles`,
         crear: `${API_BASE_URL}GradoParalelo/Crear`,

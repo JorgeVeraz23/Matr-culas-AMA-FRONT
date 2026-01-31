@@ -1,7 +1,6 @@
 export interface EstudianteInput {
   nombre: string;
   cedula: string;
-  representante: string;
   telefono: string;
   correo: string;
   nivel: number;
@@ -47,17 +46,15 @@ export interface Estudiante {
   id: number;
   nombre: string;
   apellido: string;
-  fechaNacimiento: string;
   cedula: string;
-  representante: string;
-  cedulaRepresentante: string;
-  telefonoRepresentante: string;
-  correoRepresentante: string;
+  fechaNacimiento: string;
+  idRepresentante: number;
   telefono: string;
   correo: string;
   direccion: string;
   nivel: number;
   ultimoGradoAprobado: number;
+  estado: string;
   genero: string;
 }
 

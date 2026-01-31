@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   TextField,
   Button,
@@ -15,6 +15,8 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { crearEstudiante } from "../../services/estudianteService";
+import { selectorRepresentante } from "../../services/representanteService";
+import { SelectorOption } from "../../types";
 
 type Genero = "Masculino" | "Femenino" | "Otro";
 
@@ -23,35 +25,32 @@ type EstudianteCreateDto = {
   apellido: string;
   cedula: string;
   fechaNacimiento: string; // "YYYY-MM-DD" para input date
-  representante: string;
-  cedulaRepresentante: string;
-  telefonoRepresentante: string;
-  correoRepresentante: string;
+  idRepresentante: number;
   telefono: string;
   correo: string;
   direccion: string;
   nivel: number;
   ultimoGradoAprobado: number;
+  estado: string;
   genero: Genero;
 };
 
 const CreateStudentForm: React.FC = () => {
   const navigate = useNavigate();
+  const [representantes, setRepresentantes] = useState<SelectorOption[]>([]);
 
   const [formData, setFormData] = useState<EstudianteCreateDto>({
     nombre: "",
     apellido: "",
     cedula: "",
     fechaNacimiento: "",
-    representante: "",
-    cedulaRepresentante: "",
-    telefonoRepresentante: "",
-    correoRepresentante: "",
+    idRepresentante: 0,
     telefono: "",
     correo: "",
     direccion: "",
     nivel: 1,
     ultimoGradoAprobado: 0,
+    estado: "Activo",
     genero: "Masculino",
   });
 
@@ -77,6 +76,20 @@ const CreateStudentForm: React.FC = () => {
   const handleSelectChange = (name: keyof EstudianteCreateDto, value: any) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+
+
+useEffect(() => {
+  (async () => {
+    try {
+      const data = await selectorRepresentante();
+      setRepresentantes(data);
+    } catch {
+      // opcional: snackbar
+    }
+  })();
+}, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -272,60 +285,37 @@ const CreateStudentForm: React.FC = () => {
         <Divider sx={{ my: 3 }} />
 
         {/* SECCIÓN: Representante */}
-        <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>
-          Datos del representante
-        </Typography>
+        {/* SECCIÓN: Representante */}
+<Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>
+  Representante
+</Typography>
 
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Nombre del representante"
-              name="representante"
-              fullWidth
-              value={formData.representante}
-              onChange={handleChange}
-              required
-            />
-          </Grid>
+<Grid container spacing={2}>
+  <Grid item xs={12} md={6}>
+    <FormControl fullWidth required>
+      <InputLabel id="representante-label">Representante</InputLabel>
+      <Select
+        labelId="representante-label"
+        label="Representante"
+        value={formData.idRepresentante}
+        onChange={(e) =>
+          handleSelectChange("idRepresentante", Number(e.target.value))
+        }
+      >
+        <MenuItem value={0} disabled>
+          Selecciona un representante
+        </MenuItem>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField
-              label="Cédula del representante"
-              name="cedulaRepresentante"
-              fullWidth
-              value={formData.cedulaRepresentante}
-              onChange={handleChange}
-              required
-              inputProps={{ inputMode: "numeric", pattern: "[0-9]*", maxLength: 10 }}
-              helperText="10 dígitos"
-            />
-          </Grid>
+        {representantes.map((r) => (
+          <MenuItem key={r.key} value={r.key}>
+            {r.value}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  </Grid>
+</Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField
-              label="Teléfono del representante"
-              name="telefonoRepresentante"
-              fullWidth
-              value={formData.telefonoRepresentante}
-              onChange={handleChange}
-              required
-              inputProps={{ inputMode: "tel" }}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Correo del representante"
-              name="correoRepresentante"
-              type="email"
-              fullWidth
-              value={formData.correoRepresentante}
-              onChange={handleChange}
-              required
-              placeholder="ej: representante@gmail.com"
-            />
-          </Grid>
-        </Grid>
 
         <Box sx={{ display: "flex", gap: 1.5, mt: 3, justifyContent: "flex-end" }}>
           <Button variant="outlined" onClick={() => navigate("/students")}>

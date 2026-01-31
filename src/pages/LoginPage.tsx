@@ -39,11 +39,15 @@ const LoginPage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const isValid = useMemo(() => {
-    return form.usernameOrEmail.trim().length >= 3 && form.password.trim().length >= 4;
+    return (
+      form.usernameOrEmail.trim().length >= 3 &&
+      form.password.trim().length >= 4
+    );
   }, [form]);
 
   const handleChange =
-    (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    (field: keyof FormState) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
       setErrorMsg(null);
     };
@@ -56,19 +60,14 @@ const LoginPage: React.FC = () => {
       setSubmitting(true);
       setErrorMsg(null);
 
-      // ✅ Si tu backend usa username:
-      // const res = await loginApi({ username: form.usernameOrEmail, password: form.password });
-
-      // ✅ Si tu backend usa email:
-      // const res = await loginApi({ email: form.usernameOrEmail, password: form.password });
-
-      // ✅ Versión genérica:
-      const res = await loginApi({ username: form.usernameOrEmail, password: form.password });
+      const res = await loginApi({
+        username: form.usernameOrEmail,
+        password: form.password,
+      });
 
       login(res);
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
-      // Mensaje “humano”
       const apiMsg =
         err?.response?.data?.message ||
         err?.response?.data?.error ||
@@ -86,60 +85,43 @@ const LoginPage: React.FC = () => {
         minHeight: "100vh",
         display: "grid",
         placeItems: "center",
+        bgcolor: "#F4F6F8",
         px: 2,
-        position: "relative",
-        bgcolor: "background.default",
-        overflow: "hidden",
       }}
     >
-      {/* Fondo decorativo (sin librerías) */}
-      <Box
-        aria-hidden
-        sx={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(600px circle at 20% 20%, rgba(30,64,175,0.18), transparent 60%), radial-gradient(700px circle at 80% 30%, rgba(124,58,237,0.18), transparent 60%), radial-gradient(800px circle at 50% 90%, rgba(2,132,199,0.12), transparent 60%)",
-          filter: "saturate(120%)",
-        }}
-      />
-
       <Paper
-        elevation={0}
+        elevation={1}
         sx={{
           width: "100%",
           maxWidth: 420,
-          position: "relative",
-          borderRadius: 4,
-          p: 3,
-          border: "1px solid rgba(226,232,240,0.9)",
-          backdropFilter: "blur(10px)",
-          backgroundColor: "rgba(255,255,255,0.85)",
+          borderRadius: 3,
+          p: 3.5,
+          border: "1px solid",
+          borderColor: "divider",
         }}
       >
-        {/* Header */}
-        <Stack spacing={1.2} alignItems="center" sx={{ mb: 2 }}>
+        {/* HEADER */}
+        <Stack spacing={1.5} alignItems="center" sx={{ mb: 3 }}>
           <Box
             sx={{
-              width: 56,
-              height: 56,
+              width: 48,
+              height: 48,
               display: "grid",
               placeItems: "center",
-              borderRadius: "16px",
+              borderRadius: "12px",
               bgcolor: "primary.main",
               color: "white",
-              boxShadow: "0 10px 25px rgba(30,64,175,0.25)",
             }}
           >
             <LockRoundedIcon />
           </Box>
 
-          <Typography variant="h5" sx={{ fontWeight: 800 }}>
-            Iniciar sesión
+          <Typography variant="h6" sx={{ fontWeight: 800 }}>
+            Matrículas AMA
           </Typography>
 
           <Typography variant="body2" color="text.secondary" align="center">
-            Accede al panel de Matrículas AMA con tu usuario y contraseña.
+            Acceso al sistema de gestión académica
           </Typography>
         </Stack>
 
@@ -149,11 +131,12 @@ const LoginPage: React.FC = () => {
           </Alert>
         )}
 
+        {/* FORM */}
         <Box component="form" onSubmit={handleSubmit}>
           <Stack spacing={2}>
             <TextField
               label="Usuario o correo"
-              placeholder="Ej: admin"
+              placeholder="ej. admin@escuela.edu"
               value={form.usernameOrEmail}
               onChange={handleChange("usernameOrEmail")}
               autoComplete="username"
@@ -169,7 +152,6 @@ const LoginPage: React.FC = () => {
 
             <TextField
               label="Contraseña"
-              placeholder="••••••••"
               type={showPassword ? "text" : "password"}
               value={form.password}
               onChange={handleChange("password")}
@@ -185,9 +167,12 @@ const LoginPage: React.FC = () => {
                     <IconButton
                       edge="end"
                       onClick={() => setShowPassword((p) => !p)}
-                      aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                     >
-                      {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      {showPassword ? (
+                        <VisibilityOffIcon />
+                      ) : (
+                        <VisibilityIcon />
+                      )}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -200,9 +185,9 @@ const LoginPage: React.FC = () => {
               variant="contained"
               disabled={!isValid || submitting}
               sx={{
-                py: 1.2,
-                borderRadius: 3,
-                fontWeight: 800,
+                py: 1.25,
+                borderRadius: 2.5,
+                fontWeight: 700,
               }}
             >
               {submitting ? (
@@ -211,14 +196,14 @@ const LoginPage: React.FC = () => {
                   <span>Ingresando...</span>
                 </Stack>
               ) : (
-                "Ingresar"
+                "Iniciar sesión"
               )}
             </Button>
 
-            <Divider sx={{ opacity: 0.6 }} />
+            <Divider />
 
             <Typography variant="caption" color="text.secondary" align="center">
-              Consejo: usa un usuario de prueba como <b>admin</b> y tu contraseña configurada.
+              © {new Date().getFullYear()} Matrículas AMA · Sistema académico
             </Typography>
           </Stack>
         </Box>

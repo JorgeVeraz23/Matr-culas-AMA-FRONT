@@ -23,6 +23,8 @@ import CreateMatriculaPage from "../pages/matricula/CreateMatriculaPage";
 import MatriculasPage from "../pages/matricula/MatriculasPage";
 import CreateUserForm from "../pages/usuarios/CreateUserPage";
 import UsersPage from "../pages/usuarios/UsuarioPage";
+import CreateProfesorForm from "../pages/profesor/CreateProfesorPage";
+import ProfesorPage from "../pages/profesor/ProfesorsPage";
 
 export const AppRouter: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -55,6 +57,8 @@ export const AppRouter: React.FC = () => {
             <Route path="/matricula/create" element={<CreateMatriculaPage />} />
             <Route path="/matricula" element={<MatriculasPage />} />
             <Route path="/students/create" element={<CreateStudentForm />} />
+            <Route path="/profesores/create" element={<CreateProfesorForm />} />
+            <Route path="/profesores" element={<ProfesorPage />} />
             <Route path="/enrollments" element={<EnrollmentsPage />} />
             <Route path="/documents" element={<DocumentsPage />} />
             <Route path="/paralelo" element={<ParalelosPage />} />

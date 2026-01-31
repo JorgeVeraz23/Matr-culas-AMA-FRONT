@@ -49,7 +49,6 @@ const StudentsPage: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // UX: búsqueda rápida
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -102,7 +101,6 @@ const StudentsPage: React.FC = () => {
     if (!selectedStudent) return;
 
     try {
-      // Si tu backend maneja fechaNacimiento como ISO, asegúrate que el modal lo envíe así.
       const updatedStudent = await editarEstudiante(selectedStudent.id, data);
       setEstudiantes((prev) =>
         prev.map((est) => (est.id === updatedStudent.id ? updatedStudent : est))
@@ -125,23 +123,29 @@ const StudentsPage: React.FC = () => {
     navigate("/students/create");
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => setPage(newPage);
+  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  // Filtrado por búsqueda (nombre, apellido, cédula, representante)
+  // ✅ Búsqueda SOLO con los campos reales del API
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return estudiantes;
 
     return estudiantes.filter((e) => {
-      const fullName = `${e.nombre ?? ""} ${e.apellido ?? ""}`.toLowerCase();
-      const rep = (e.representante ?? "").toLowerCase();
+      const nombre = (e.nombre ?? "").toLowerCase();
       const ced = (e.cedula ?? "").toLowerCase();
-      return fullName.includes(q) || rep.includes(q) || ced.includes(q);
+      const correo = (e.correo ?? "").toLowerCase();
+      const tel = (e.telefono ?? "").toLowerCase();
+      return (
+        nombre.includes(q) ||
+        ced.includes(q) ||
+        correo.includes(q) ||
+        tel.includes(q) 
+      );
     });
   }, [estudiantes, search]);
 
@@ -149,10 +153,8 @@ const StudentsPage: React.FC = () => {
     return filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
   }, [filtered, page, rowsPerPage]);
 
-  // Helpers
   const formatDate = (iso?: string) => {
     if (!iso) return "-";
-    // acepta "YYYY-MM-DD" o "YYYY-MM-DDTHH:mm:ss"
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return iso;
     return d.toLocaleDateString("es-EC");
@@ -183,7 +185,7 @@ const StudentsPage: React.FC = () => {
         <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", flexWrap: "wrap" }}>
           <TextField
             size="small"
-            placeholder="Buscar por nombre, cédula o representante..."
+            placeholder="Buscar por nombre, cédula, correo o teléfono..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -192,7 +194,7 @@ const StudentsPage: React.FC = () => {
             InputProps={{
               startAdornment: <SearchIcon fontSize="small" style={{ marginRight: 8 }} />,
             }}
-            sx={{ minWidth: { xs: "100%", sm: 380 } }}
+            sx={{ minWidth: { xs: "100%", sm: 420 } }}
           />
 
           <Button
@@ -206,7 +208,6 @@ const StudentsPage: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Error */}
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
@@ -219,11 +220,11 @@ const StudentsPage: React.FC = () => {
             <TableRow>
               <TableCell sx={{ fontWeight: 800 }}>Estudiante</TableCell>
               <TableCell sx={{ fontWeight: 800 }}>Cédula</TableCell>
+              <TableCell sx={{ fontWeight: 800 }}>Edad</TableCell>
               <TableCell sx={{ fontWeight: 800 }}>Nacimiento</TableCell>
-              <TableCell sx={{ fontWeight: 800 }}>Representante</TableCell>
               <TableCell sx={{ fontWeight: 800 }}>Contacto</TableCell>
               <TableCell sx={{ fontWeight: 800 }}>Nivel</TableCell>
-              <TableCell sx={{ fontWeight: 800 }}>Varios</TableCell>
+              <TableCell sx={{ fontWeight: 800 }}>Estado</TableCell>
               <TableCell sx={{ fontWeight: 800, width: 140 }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
@@ -231,16 +232,14 @@ const StudentsPage: React.FC = () => {
           <TableBody>
             {paginated.map((est) => (
               <TableRow key={est.id} hover>
-                {/* Estudiante (Nombre + Apellido + Género chip) */}
+                {/* Estudiante */}
                 <TableCell>
                   <Box sx={{ display: "flex", flexDirection: "column" }}>
                     <Typography sx={{ fontWeight: 700, lineHeight: 1.2 }}>
-                      {est.nombre} {est.apellido ?? ""}
+                      {est.nombre}
                     </Typography>
                     <Box sx={{ display: "flex", gap: 1, mt: 0.5, flexWrap: "wrap" }}>
-                      {est.genero && (
-                        <Chip size="small" label={est.genero} variant="outlined" />
-                      )}
+                      {est.genero && <Chip size="small" label={est.genero} variant="outlined" />}
                       {typeof est.ultimoGradoAprobado !== "undefined" && (
                         <Chip
                           size="small"
@@ -249,35 +248,21 @@ const StudentsPage: React.FC = () => {
                         />
                       )}
                     </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                      {est.direccion ?? "-"}
+                    </Typography>
                   </Box>
                 </TableCell>
 
                 <TableCell>{est.cedula}</TableCell>
+                <TableCell>{formatDate(est.fechaNacimiento as any)}</TableCell>
 
-                <TableCell>{formatDate((est as any).fechaNacimiento)}</TableCell>
-
+                {/* Contacto */}
                 <TableCell>
                   <Box sx={{ display: "flex", flexDirection: "column" }}>
-                    <Typography sx={{ fontWeight: 600 }}>
-                      {est.representante}
-                    </Typography>
+                    <Typography variant="body2">Tel: {est.telefono ?? "-"}</Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {(est as any).cedulaRepresentante ?? ""}
-                    </Typography>
-                  </Box>
-                </TableCell>
-
-                {/* Contacto (tel + correo represent + tel represent) */}
-                <TableCell>
-                  <Box sx={{ display: "flex", flexDirection: "column" }}>
-                    <Typography variant="body2">
-                      Tel. Est.: {est.telefono}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Rep.: {(est as any).telefonoRepresentante ?? "-"}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {(est as any).correoRepresentante ?? est.correo ?? "-"}
+                      {est.correo ?? "-"}
                     </Typography>
                   </Box>
                 </TableCell>
@@ -286,14 +271,12 @@ const StudentsPage: React.FC = () => {
                   <Chip size="small" label={`Nivel ${est.nivel}`} />
                 </TableCell>
 
-                {/* Varios (Dirección + correo estudiante) */}
                 <TableCell>
-                  <Typography variant="body2" sx={{ maxWidth: 240 }} noWrap title={(est as any).direccion}>
-                    {(est as any).direccion ?? "-"}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Correo est.: {est.correo ? est.correo : "-"}
-                  </Typography>
+                  <Chip
+                    size="small"
+                    label={est.estado ?? "-"}
+                    variant="outlined"
+                  />
                 </TableCell>
 
                 <TableCell>
@@ -342,30 +325,24 @@ const StudentsPage: React.FC = () => {
         />
       </TableContainer>
 
-      {/* ModalGenérico para editar (actualizado a todos los campos) */}
+      {/* ✅ Modal SOLO con campos reales del API */}
       <ModalGenérico
         open={openModal}
         onClose={handleCloseModal}
         onSave={handleSaveChanges}
         data={selectedStudent}
         fields={[
-          // Datos estudiante
-          { label: "Nombre", name: "nombre" },
-          { label: "Apellido", name: "apellido" },
+          { label: "Nombre Completo", name: "nombreCompleto" },
           { label: "Cédula", name: "cedula" },
+          { label: "Edad", name: "edad" },
           { label: "Fecha Nacimiento", name: "fechaNacimiento" },
           { label: "Género", name: "genero" },
-          { label: "Teléfono (estudiante)", name: "telefono" },
-          { label: "Correo (estudiante)", name: "correo" },
+          { label: "Teléfono", name: "telefono" },
+          { label: "Correo", name: "correo" },
           { label: "Dirección", name: "direccion" },
           { label: "Nivel", name: "nivel" },
           { label: "Último Grado Aprobado", name: "ultimoGradoAprobado" },
-
-          // Datos representante
-          { label: "Representante", name: "representante" },
-          { label: "Cédula Representante", name: "cedulaRepresentante" },
-          { label: "Teléfono Representante", name: "telefonoRepresentante" },
-          { label: "Correo Representante", name: "correoRepresentante" },
+          { label: "Estado", name: "estado" },
         ]}
       />
 

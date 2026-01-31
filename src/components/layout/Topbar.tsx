@@ -18,7 +18,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import LockResetIcon from "@mui/icons-material/LockReset";
 
-
 export const Topbar: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -26,7 +25,8 @@ export const Topbar: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const handleOpen = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+  const handleOpen = (event: React.MouseEvent<HTMLElement>) =>
+    setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
   const handleLogout = () => {
@@ -39,7 +39,6 @@ export const Topbar: React.FC = () => {
     const name = user?.username ?? "Usuario";
     const role = user?.role ?? "Rol";
 
-    // iniciales (2 letras)
     const ini = name
       .replace(/[^a-zA-Z0-9]+/g, " ")
       .trim()
@@ -56,25 +55,33 @@ export const Topbar: React.FC = () => {
   return (
     <AppBar
       position="static"
-      elevation={1}
+      elevation={0}
       sx={{
-        borderBottom: 1,
+        bgcolor: "background.paper",
+        color: "text.primary",
+        borderBottom: "1px solid",
         borderColor: "divider",
-        bgcolor: "primary.main",
       }}
     >
       <Toolbar sx={{ minHeight: 72, px: { xs: 2, md: 3 } }}>
         {/* TITULO */}
         <Box sx={{ flex: 1 }}>
-          <Typography variant="h6" sx={{ fontSize: 22, fontWeight: 700, color: "common.white" }}>
+          <Typography
+            variant="h6"
+            sx={{ fontSize: 20, fontWeight: 700 }}
+          >
             Plataforma de Gestión de Matrículas
           </Typography>
-          <Typography variant="body2" sx={{ mt: 0.5, color: "rgba(255,255,255,0.8)" }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mt: 0.25 }}
+          >
             Control de estudiantes, matrículas y documentos digitales.
           </Typography>
         </Box>
 
-        {/* USUARIO (click abre menu) */}
+        {/* USUARIO */}
         <Stack
           direction="row"
           spacing={1.25}
@@ -85,15 +92,18 @@ export const Topbar: React.FC = () => {
             px: 1,
             py: 0.75,
             borderRadius: 2,
-            "&:hover": { bgcolor: "rgba(255,255,255,0.08)" },
+            "&:hover": { bgcolor: "action.hover" },
             userSelect: "none",
           }}
         >
           <Box sx={{ textAlign: "right" }}>
-            <Typography variant="body2" sx={{ fontWeight: 700, color: "common.white", lineHeight: 1.1 }}>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 700, lineHeight: 1.1 }}
+            >
               {displayName}
             </Typography>
-            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.8)" }}>
+            <Typography variant="caption" color="text.secondary">
               {displayRole}
             </Typography>
           </Box>
@@ -102,24 +112,20 @@ export const Topbar: React.FC = () => {
             sx={{
               width: 36,
               height: 36,
-              fontWeight: 800,
-              bgcolor: "secondary.main",
-              boxShadow: "0 8px 20px rgba(0,0,0,0.18)",
+              fontWeight: 700,
+              bgcolor: "primary.main",
+              color: "common.white",
             }}
           >
             {initials}
           </Avatar>
 
-          <IconButton
-            size="small"
-            sx={{ color: "rgba(255,255,255,0.9)" }}
-            onClick={handleOpen}
-          >
+          <IconButton size="small" onClick={handleOpen}>
             <ExpandMoreRoundedIcon />
           </IconButton>
         </Stack>
 
-        {/* MENU OCULTO (logout aqui) */}
+        {/* MENU USUARIO */}
         <Menu
           anchorEl={anchorEl}
           open={open}
@@ -131,12 +137,14 @@ export const Topbar: React.FC = () => {
               mt: 1,
               minWidth: 220,
               borderRadius: 2,
-              overflow: "hidden",
+              border: "1px solid",
+              borderColor: "divider",
+              boxShadow: "0px 8px 24px rgba(15,23,42,0.12)",
             },
           }}
         >
           <Box sx={{ px: 2, py: 1.25 }}>
-            <Typography variant="subtitle2" fontWeight={800}>
+            <Typography variant="subtitle2" fontWeight={700}>
               {displayName}
             </Typography>
             <Typography variant="caption" color="text.secondary">
@@ -152,27 +160,24 @@ export const Topbar: React.FC = () => {
               navigate("/settings");
             }}
           >
-            <SettingsIcon fontSize="small" style={{ marginRight: 10 }} />
+            <SettingsIcon fontSize="small" sx={{ mr: 1 }} />
             Configuración
           </MenuItem>
 
-             <Divider />
-
-             <MenuItem
-  onClick={() => {
-    handleClose();
-    navigate("/cambiar-contrasena");
-  }}
->
-  <LockResetIcon fontSize="small" style={{ marginRight: 10 }} />
-  Cambiar contraseña
-</MenuItem>
-
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              navigate("/cambiar-contrasena");
+            }}
+          >
+            <LockResetIcon fontSize="small" sx={{ mr: 1 }} />
+            Cambiar contraseña
+          </MenuItem>
 
           <Divider />
 
           <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
-            <LogoutIcon fontSize="small" style={{ marginRight: 10 }} />
+            <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
             Cerrar sesión
           </MenuItem>
         </Menu>

@@ -62,7 +62,7 @@ const MatriculasPage: React.FC = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const periodosDisponibles = useMemo(() => {
-    const set = new Set<string>(["2025-2026", "2024-2025", "2023-2024"]);
+    const set = new Set<string>(["2025", "2024", "2023"]);
     data.forEach((m) => set.add(m.periodo));
     return Array.from(set).sort().reverse();
   }, [data]);

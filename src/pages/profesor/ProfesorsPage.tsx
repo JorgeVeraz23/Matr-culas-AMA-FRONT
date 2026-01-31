@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
-  Avatar,
   Box,
   Button,
   Chip,
@@ -22,7 +21,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Divider,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -31,15 +29,13 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
 import ModalSweetAlert from "../../components/common/ModalSweetAlert";
-import {
-  listarMaterias,
-  editarMateria,
-  eliminarMateria,
-} from "../../services/materia/materiaService";
+
+// import { listarMaterias, editarMateria, eliminarMateria } from "../../services/materiaService";
+import { listarMaterias, editarMateria, eliminarMateria } from "../../services/materia/materiaService";
 import { selectorGrado } from "../../services/gradoService";
 import { MateriaResponse, SelectorOption } from "../../types";
 
-const MateriasPage: React.FC = () => {
+const ProfesorPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [materias, setMaterias] = useState<MateriaResponse[]>([]);
@@ -52,13 +48,11 @@ const MateriasPage: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [selectedMateria, setSelectedMateria] =
-    useState<MateriaResponse | null>(null);
+  const [selectedMateria, setSelectedMateria] = useState<MateriaResponse | null>(null);
   const [openModal, setOpenModal] = useState(false);
 
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] =
-    useState<"success" | "error">("success");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
@@ -71,7 +65,8 @@ const MateriasPage: React.FC = () => {
       setLoading(true);
       const data = await listarMaterias();
       setMaterias(data);
-    } catch {
+    } catch (err) {
+      console.error(err);
       setError("Error al cargar materias");
     } finally {
       setLoading(false);
@@ -83,12 +78,14 @@ const MateriasPage: React.FC = () => {
       setLoadingGrados(true);
       const data = await selectorGrado();
       setGrados(data);
+    } catch (err) {
+      console.error("Error cargando grados", err);
     } finally {
       setLoadingGrados(false);
     }
   };
 
-  const handleCreate = () => navigate("/materia/create");
+  const handleCreate = () => navigate("/profesores/create");
 
   const handleEliminar = async (id: number) => {
     ModalSweetAlert("delete", async () => {
@@ -97,10 +94,11 @@ const MateriasPage: React.FC = () => {
         setMaterias((prev) => prev.filter((m) => m.id !== id));
         setSnackbarSeverity("success");
         setSnackbarMessage("Materia eliminada correctamente");
-      } catch {
+        setOpenSnackbar(true);
+      } catch (err) {
+        console.error(err);
         setSnackbarSeverity("error");
         setSnackbarMessage("Error al eliminar la materia");
-      } finally {
         setOpenSnackbar(true);
       }
     });
@@ -109,109 +107,61 @@ const MateriasPage: React.FC = () => {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return materias;
-    return materias.filter(
-      (m) =>
-        m.nombre.toLowerCase().includes(q) ||
-        m.gradoNombre.toLowerCase().includes(q)
+
+    return materias.filter((m) =>
+      m.nombre.toLowerCase().includes(q) ||
+      m.gradoNombre.toLowerCase().includes(q)
     );
   }, [materias, search]);
 
-  const paginated = useMemo(
-    () =>
-      filtered.slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      ),
-    [filtered, page, rowsPerPage]
-  );
+  const paginated = useMemo(() => {
+    return filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  }, [filtered, page, rowsPerPage]);
 
   return (
-    <Box sx={{ maxWidth: 1300, mx: "auto", p: 3 }}>
-      {/* HEADER */}
-      <Box
-        sx={{
-          mb: 3,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+    <Box sx={{ maxWidth: 1200, mx: "auto", p: { xs: 1, sm: 2 } }}>
+      {/* Header */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
         <Box>
-          <Typography sx={{ fontSize: 28, fontWeight: 900 }}>
-            Materias
+          <Typography variant="h5" sx={{ fontWeight: 800 }}>
+            Profesores
           </Typography>
-          <Typography color="text.secondary">
-            Gestiona y organiza las materias académicas
+          <Typography variant="body2" color="text.secondary">
+            {loading ? "Cargando..." : `${filtered.length} registro(s)`}
           </Typography>
         </Box>
 
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleCreate}
-          sx={{ px: 3, py: 1.2, fontWeight: 700 }}
-        >
-          Crear materia
-        </Button>
-      </Box>
+        <Box sx={{ display: "flex", gap: 1.5 }}>
+          <TextField
+            size="small"
+            placeholder="Buscar por materia o grado..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(0);
+            }}
+            InputProps={{
+              startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1 }} />,
+            }}
+            sx={{ minWidth: 320 }}
+          />
 
-      {/* SEARCH */}
-      <Box
-        sx={{
-          mb: 3,
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          px: 2,
-          py: 1.2,
-          bgcolor: "#F8FAFC",
-          border: "1px solid",
-          borderColor: "divider",
-          borderRadius: 3,
-        }}
-      >
-        <SearchIcon color="action" />
-        <TextField
-          variant="standard"
-          placeholder="Buscar por nombre de materia o grado..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(0);
-          }}
-          InputProps={{ disableUnderline: true }}
-          sx={{ flex: 1 }}
-        />
+          <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreate}>
+            Crear
+          </Button>
+        </Box>
       </Box>
 
       {error && <Alert severity="error">{error}</Alert>}
 
-      {/* TABLE */}
-      <TableContainer
-        component={Paper}
-        elevation={0}
-        sx={{
-          borderRadius: 3,
-          border: "1px solid",
-          borderColor: "divider",
-          overflow: "hidden",
-        }}
-      >
+      {/* Tabla */}
+      <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 2 }}>
         <Table>
-          <TableHead sx={{ bgcolor: "#F8FAFC" }}>
+          <TableHead>
             <TableRow>
-              <TableCell sx={{ fontSize: 12, fontWeight: 800 }}>
-                MATERIA
-              </TableCell>
-              <TableCell sx={{ fontSize: 12, fontWeight: 800 }}>
-                GRADO
-              </TableCell>
-              <TableCell
-                align="right"
-                sx={{ fontSize: 12, fontWeight: 800 }}
-              >
-                ACCIONES
-              </TableCell>
+              <TableCell sx={{ fontWeight: 800 }}>Materia</TableCell>
+              <TableCell sx={{ fontWeight: 800 }}>Grado</TableCell>
+              <TableCell sx={{ fontWeight: 800, width: 140 }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
 
@@ -219,40 +169,14 @@ const MateriasPage: React.FC = () => {
             {paginated.map((m) => (
               <TableRow key={m.id} hover>
                 <TableCell>
-                  <Box sx={{ display: "flex", gap: 2 }}>
-                    <Avatar
-                      sx={{
-                        bgcolor: "primary.light",
-                        color: "primary.main",
-                        fontWeight: 800,
-                      }}
-                    >
-                      {m.nombre.slice(0, 2).toUpperCase()}
-                    </Avatar>
-                    <Box>
-                      <Typography fontWeight={700}>
-                        {m.nombre}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        ID #{m.id}
-                      </Typography>
-                    </Box>
-                  </Box>
+                  <Typography sx={{ fontWeight: 700 }}>{m.nombre}</Typography>
                 </TableCell>
 
                 <TableCell>
-                  <Chip
-                    label={m.gradoNombre}
-                    size="small"
-                    sx={{
-                      bgcolor: "primary.light",
-                      color: "primary.main",
-                      fontWeight: 600,
-                    }}
-                  />
+                  <Chip size="small" label={m.gradoNombre} variant="outlined" />
                 </TableCell>
 
-                <TableCell align="right">
+                <TableCell>
                   <Tooltip title="Editar">
                     <IconButton
                       onClick={() => {
@@ -260,13 +184,13 @@ const MateriasPage: React.FC = () => {
                         setOpenModal(true);
                       }}
                     >
-                      <EditIcon fontSize="small" />
+                      <EditIcon color="primary" />
                     </IconButton>
                   </Tooltip>
 
                   <Tooltip title="Eliminar">
                     <IconButton onClick={() => handleEliminar(m.id)}>
-                      <DeleteIcon fontSize="small" color="error" />
+                      <DeleteIcon color="error" />
                     </IconButton>
                   </Tooltip>
                 </TableCell>
@@ -275,9 +199,9 @@ const MateriasPage: React.FC = () => {
 
             {!loading && paginated.length === 0 && (
               <TableRow>
-                <TableCell colSpan={3} sx={{ py: 6 }}>
-                  <Typography align="center" color="text.secondary">
-                    No hay materias registradas
+                <TableCell colSpan={3}>
+                  <Typography color="text.secondary">
+                    No hay materias que coincidan con la búsqueda.
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -286,20 +210,20 @@ const MateriasPage: React.FC = () => {
         </Table>
 
         <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={filtered.length}
-          page={page}
           rowsPerPage={rowsPerPage}
-          onPageChange={(_, p) => setPage(p)}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
           onRowsPerPageChange={(e) => {
             setRowsPerPage(parseInt(e.target.value, 10));
             setPage(0);
           }}
-          rowsPerPageOptions={[5, 10, 25]}
         />
       </TableContainer>
 
-      {/* MODAL EDIT */}
+      {/* MODAL EDITAR */}
       {openModal && selectedMateria && (
         <Box
           sx={{
@@ -309,15 +233,23 @@ const MateriasPage: React.FC = () => {
             display: "grid",
             placeItems: "center",
             zIndex: 1300,
+            p: 2,
           }}
           onClick={() => setOpenModal(false)}
         >
-          <Paper
-            sx={{ width: 520, p: 3, borderRadius: 3 }}
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: 520,
+              bgcolor: "background.paper",
+              borderRadius: 2,
+              p: 3,
+              boxShadow: 6,
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <Typography fontWeight={900} mb={2}>
-              Editar materia
+            <Typography variant="h6" sx={{ fontWeight: 900, mb: 2 }}>
+              Editar Materia
             </Typography>
 
             <TextField
@@ -326,16 +258,14 @@ const MateriasPage: React.FC = () => {
               margin="normal"
               value={selectedMateria.nombre}
               onChange={(e) =>
-                setSelectedMateria({
-                  ...selectedMateria,
-                  nombre: e.target.value,
-                })
+                setSelectedMateria({ ...selectedMateria, nombre: e.target.value })
               }
             />
 
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Grado</InputLabel>
+            <FormControl fullWidth margin="normal" required disabled={loadingGrados}>
+              <InputLabel id="grado-edit">Grado</InputLabel>
               <Select
+                labelId="grado-edit"
                 label="Grado"
                 value={selectedMateria.gradoId}
                 onChange={(e) =>
@@ -345,6 +275,9 @@ const MateriasPage: React.FC = () => {
                   })
                 }
               >
+                <MenuItem value={0} disabled>
+                  Selecciona un grado
+                </MenuItem>
                 {grados.map((g) => (
                   <MenuItem key={g.key} value={g.key}>
                     {g.value}
@@ -353,40 +286,56 @@ const MateriasPage: React.FC = () => {
               </Select>
             </FormControl>
 
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
-              <Button onClick={() => setOpenModal(false)}>Cancelar</Button>
+            <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 1.5 }}>
+              <Button variant="outlined" onClick={() => setOpenModal(false)}>
+                Cancelar
+              </Button>
               <Button
                 variant="contained"
                 onClick={async () => {
                   try {
                     await editarMateria(selectedMateria.id, {
-                      nombre: selectedMateria.nombre,
+                      nombre: selectedMateria.nombre.trim(),
                       gradoId: selectedMateria.gradoId,
                     });
-                    fetchMaterias();
+
+                    setMaterias((prev) =>
+                      prev.map((m) =>
+                        m.id === selectedMateria.id
+                          ? {
+                              ...m,
+                              nombre: selectedMateria.nombre,
+                              gradoId: selectedMateria.gradoId,
+                              gradoNombre:
+                                grados.find((g) => g.key === selectedMateria.gradoId)
+                                  ?.value ?? m.gradoNombre,
+                            }
+                          : m
+                      )
+                    );
+
                     setSnackbarSeverity("success");
-                    setSnackbarMessage("Materia actualizada");
-                  } catch {
-                    setSnackbarSeverity("error");
-                    setSnackbarMessage("Error al actualizar");
-                  } finally {
+                    setSnackbarMessage("Materia actualizada correctamente");
                     setOpenSnackbar(true);
                     setOpenModal(false);
+                  } catch (err) {
+                    console.error(err);
+                    setSnackbarSeverity("error");
+                    setSnackbarMessage("Error al actualizar la materia");
+                    setOpenSnackbar(true);
                   }
                 }}
               >
-                Guardar
+                Guardar cambios
               </Button>
             </Box>
-          </Paper>
+          </Box>
         </Box>
       )}
 
       <Snackbar
         open={openSnackbar}
-        autoHideDuration={4000}
+        autoHideDuration={4500}
         onClose={() => setOpenSnackbar(false)}
       >
         <Alert severity={snackbarSeverity} variant="filled">
@@ -397,4 +346,4 @@ const MateriasPage: React.FC = () => {
   );
 };
 
-export default MateriasPage;
+export default ProfesorPage;
