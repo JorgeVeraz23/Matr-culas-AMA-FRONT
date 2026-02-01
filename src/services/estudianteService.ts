@@ -57,3 +57,10 @@ export const selectorEstudiantesSinMatricula = async (): Promise<SelectorOption[
   );
   return response.data;
 };
+
+export const selectorEstudiantesDocs= async (): Promise<SelectorOption[]> => {
+  const response = await api.get<SelectorOption[]>(
+    API_ROUTES.estudiante.selectorEstudianteDocs
+  );
+  return response.data;
+};

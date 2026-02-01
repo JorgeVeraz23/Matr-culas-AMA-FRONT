@@ -10,8 +10,11 @@ export const API_ROUTES = {
     obtenerPorId: `${API_BASE_URL}Estudiante/ObtenerEstudiante`,
     search: `${API_BASE_URL}Estudiante/Search`,
     selector: `${API_BASE_URL}Estudiante/SelectorEstudiante`,
+    selectorEstudianteDocs: `${API_BASE_URL}Estudiante/SelectorEstudianteDocs`,
   },
-
+  tipoDocumento: {
+    listar: `${API_BASE_URL}TipoDocumento/list`,
+  },
   materia: {
     crear: `${API_BASE_URL}Materia/CrearMateria`,
     editar: `${API_BASE_URL}Materia/ActualizarMateria`,
@@ -98,4 +101,13 @@ export const API_ROUTES = {
     search: (q: string, take: number = 10) =>
       `${API_BASE_URL}Profesor/search?q=${encodeURIComponent(q)}&take=${take}`,
   },
+  documento: {
+  upload: `${API_BASE_URL}Document/upload`,
+  listarPorEstudiante: (estudianteId: number) =>
+    `${API_BASE_URL}Document/estudiante/${estudianteId}`,
+  aprobar: (id: number) => `${API_BASE_URL}Document/${id}/aprobar`,
+  download: (id: number) => `${API_BASE_URL}Document/${id}/download`,
+},
+
+
 } as const;

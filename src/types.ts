@@ -249,3 +249,33 @@ export interface RepresentanteResponseDto {
   isActive?: boolean | null;
 }
 
+
+export interface DocumentoUploadRequest {
+  estudianteId: number;
+  tipoDocumentoId: number;
+  file: File;              // multipart
+  observacion?: string | null;
+}
+
+export interface AprobarDto {
+  aprobado: boolean;
+  observacion?: string | null;
+}
+
+// Ajusta estos campos a lo que tu servicio devuelve en ListarPorEstudianteAsync
+export interface DocumentoResponseDto {
+  id: number;
+  estudianteId: number;
+  tipoDocumentoId: number;
+  tipoDocumentoNombre?: string | null;
+
+  fileName?: string | null;
+  contentType?: string | null;
+  sizeBytes?: number | null;
+
+  aprobado?: boolean | null;
+  observacion?: string | null;
+
+  createdAt?: string | null;
+}
+

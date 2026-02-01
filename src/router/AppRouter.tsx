@@ -5,7 +5,7 @@ import { Sidebar } from "../components/layout/Sidebar";
 import { Topbar } from "../components/layout/Topbar";
 import { DashboardPage } from "../pages/DashboardPage";
 import { EnrollmentsPage } from "../pages/EnrollmentsPage";
-import { DocumentsPage } from "../pages/DocumentsPage";
+import DocumentosEstudiantePage from "../pages/DocumentsPage";
 import { SettingsPage } from "../pages/SettingsPage";
 import StudentsPage from "../pages/students/StudentsPage";
 import ChangePasswordPage from "../pages/auth/changuePassword";
@@ -67,7 +67,7 @@ export const AppRouter: React.FC = () => {
             <Route path="/profesores/create" element={<CreateProfesorForm />} />
             <Route path="/profesores" element={<ProfesorPage />} />
             <Route path="/enrollments" element={<EnrollmentsPage />} />
-            <Route path="/documents" element={<DocumentsPage />} />
+            <Route path="/documents" element={<DocumentosEstudiantePage />} />
             <Route path="/paralelo" element={<ParalelosPage />} />
             <Route path="/paralelos/create" element={<CreateParaleloForm />} />
             <Route path="/settings" element={<SettingsPage />} />
